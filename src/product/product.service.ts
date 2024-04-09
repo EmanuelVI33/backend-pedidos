@@ -1,22 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
+import { CategoryService } from 'src/category/category.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
+    private categoryService: CategoryService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
     try {
-      console.log('Creando');
-      const product = await this.productRepository.save(createProductDto);
-      return product;
+      const { categoryId, ...productData } = createProductDto;
+      const category = await this.categoryService.findOne(categoryId);
+
+      const product = this.productRepository.create({
+        category,
+        ...productData
+      });
+      
+      return this.productRepository.save(product);
     } catch (error) {
       console.log(error);
       return error;      
@@ -48,11 +56,15 @@ export class ProductService {
 
   async update(id: number, updateProductDto: UpdateProductDto) {
     try {
-      const products = await this.productRepository.find({ order: {
-        id: "DESC"
-    } });
-      console.log(products);
-      return products;
+      console.log(`Id del produto ${id}`);
+      const { categoryId, ...productData } = updateProductDto;
+      const category = await this.categoryService.findOne(categoryId);
+      const product = await this.findOne(id);
+      if (!product) {
+        throw new NotFoundException('Producto no encontrado');
+      }
+      this.productRepository.merge(product, { category, ...productData });
+      return await this.productRepository.save(product);
     } catch (error) {
       return error;
     }
@@ -60,11 +72,13 @@ export class ProductService {
 
   async remove(id: number) {
     try {
-      const products = await this.productRepository.find({ order: {
-        id: "DESC"
-    } });
-      console.log(products);
-      return products;
+      const product = await this.findOne(id);
+
+      if (!product) {
+        throw new NotFoundException('Category not found');
+      }
+      
+      return await this.productRepository.remove(product);
     } catch (error) {
       return error;
     }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
@@ -47,11 +47,14 @@ export class CategoryService {
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     try {
-      const categories = await this.categoryRepository.find({ order: {
-        id: "DESC"
-    } });
-      console.log(categories);
-      return categories;
+      const category = await this.findOne(id);
+
+      if (!category) {
+        throw new NotFoundException('Category not found');
+      }
+      
+      this.categoryRepository.merge(category, updateCategoryDto);
+      return await this.categoryRepository.save(category);
     } catch (error) {
       return error;
     }
@@ -59,11 +62,13 @@ export class CategoryService {
 
   async remove(id: number) {
     try {
-      const categories = await this.categoryRepository.find({ order: {
-        id: "DESC"
-    } });
-      console.log(categories);
-      return categories;
+      const category = await this.findOne(id);
+
+      if (!category) {
+        throw new NotFoundException('Category not found');
+      }
+      
+      return await this.categoryRepository.remove(category);
     } catch (error) {
       return error;
     }

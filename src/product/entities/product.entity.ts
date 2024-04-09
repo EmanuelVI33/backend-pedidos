@@ -12,10 +12,10 @@ export class Product {
     @Column({nullable: true})
     description: string;
 
-    @Column()
+    @Column('decimal', { precision: 6, scale: 2 })
     salePrice: number;
 
-    @Column({nullable: true})
+    @Column('decimal', { precision: 6, scale: 2, nullable: true})
     purchasePrice: number;
 
     @Column()
