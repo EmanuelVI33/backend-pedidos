@@ -14,11 +14,9 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto) {
     try {
-      console.log('Creando');
       const category = await this.categoryRepository.save(createCategoryDto);
       return category;
     } catch (error) {
-      console.log(error);
       return error;      
     }
   }
@@ -28,7 +26,6 @@ export class CategoryService {
       const categories = await this.categoryRepository.find({ order: {
         id: "DESC"
     } });
-      console.log(categories);
       return categories;
     } catch (error) {
       return error;
@@ -38,7 +35,6 @@ export class CategoryService {
   async findOne(id: number) {
     try {
       const categories = await this.categoryRepository.findOneBy({ id });
-      console.log(categories);
       return categories;
     } catch (error) {
       return error;

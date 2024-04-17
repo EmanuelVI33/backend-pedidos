@@ -26,7 +26,6 @@ export class ProductService {
       
       return this.productRepository.save(product);
     } catch (error) {
-      console.log(error);
       return error;      
     }
   }
@@ -37,7 +36,6 @@ export class ProductService {
         order: {id: "DESC"}, 
         relations: {category: true}
       });
-      console.log(products);
       return products;
     } catch (error) {
       return error;
@@ -47,7 +45,6 @@ export class ProductService {
   async findOne(id: number) {
     try {
       const products = await this.productRepository.findOneBy({ id });
-      console.log(products);
       return products;
     } catch (error) {
       return error;
@@ -56,7 +53,6 @@ export class ProductService {
 
   async update(id: number, updateProductDto: UpdateProductDto) {
     try {
-      console.log(`Id del produto ${id}`);
       const { categoryId, ...productData } = updateProductDto;
       const category = await this.categoryService.findOne(categoryId);
       const product = await this.findOne(id);

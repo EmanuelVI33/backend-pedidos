@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: true,
     }),
     CategoryModule, 
-    ProductModule
+    ProductModule, OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],
